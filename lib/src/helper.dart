@@ -1,4 +1,6 @@
 import 'dart:html';
+import 'dart:js' as js;
+
 import 'package:http/http.dart' as http;
 
 class Helper {
@@ -98,5 +100,27 @@ class Helper {
     final isMatching = regExp.hasMatch(response.body);
 
     return response.statusCode == 0 && !isMatching;
+  }
+
+  bool uBlockOriginDetection() {
+    // Define a JavaScript function `uBlockActive` in the global context
+    js.context['uBlockActive'] = () {
+      // Attempt to retrieve the `adsbygoogle` object from the
+      // global JavaScript context
+      final adsbygoogle = js.context['adsbygoogle'];
+
+      // Check if the `adsbygoogle` object exists and has a `push`
+      // method with non-empty content
+      if (adsbygoogle != null &&
+          adsbygoogle.callMethod('push', []).length > 0) {
+        // If ads are present, uBlock Origin is not active
+        return false;
+      }
+      // If no ads are detected, assume uBlock Origin is active
+      return true;
+    };
+
+    // Call the `uBlockActive` JavaScript function and return its result
+    return js.context.callMethod('uBlockActive');
   }
 }

@@ -66,4 +66,9 @@ class AdBlockDetecter {
 
     return Future.value(false);
   }
+
+  /// Standalone check to detect if uBlock Origin seems to be activated
+  bool get uBlockOriginDetection {
+    return _helper.uBlockOriginDetection();
+  }
 }
